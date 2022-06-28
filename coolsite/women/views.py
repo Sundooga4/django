@@ -1,11 +1,25 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import redirect
+from django.views.generic import ListView
+
 
 from .forms import *
 from .models import *
 
+class WomenHome(ListView):
+    model = Women
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+    extra_context = {'title': 'Main page'}
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cat_selected'] = 0
+        return context
+
+    def get_queryset(self):
+        return Women.objects.filter(is_published=True)
+'''
 def index(request):
     posts = Women.objects.all()
     context = {
@@ -14,7 +28,7 @@ def index(request):
         'cat_selected':0,
     }
     return render(request, 'women/index.html', context=context)
-
+'''
 def about(request):
     return render(request, 'women/about.html', {'title': 'About site'})
 
@@ -46,6 +60,23 @@ def show_post(request, post_slug):
 
     return render(request, 'women/post.html', context=context)
 
+class WomenCategory(ListView):
+    model = Women
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Category' + str(context['posts'][0].cat)
+        context['cat_selected'] = context['posts'][0].cat_id
+        return context
+
+    def get_queryset(self):
+        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
+
+
+
+'''
 def show_category(request, cat_slug):
     cat = Category.objects.filter(slug=cat_slug)
     posts = Women.objects.filter(cat_id=cat[0].id)
@@ -59,7 +90,7 @@ def show_category(request, cat_slug):
         'cat_selected': cat[0].id,
     }
     return render(request, 'women/index.html', context=context)
-
+'''
 
 def pageNotFound(request,exception):
     return HttpResponseNotFound("<h1>There is no such page</h1>")
