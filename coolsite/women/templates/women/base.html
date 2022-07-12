@@ -16,7 +16,13 @@
 		<div class="header">
 			<ul id="mainmenu" class="mainmenu">
 			<li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>
-{% show_menu %}
+{% for m in menu %}
+	{% if not forloop.last %}
+			<li><a href="{% url m.url_name %}">{{m.title}}</a></li>
+	{% else %}
+			<li class="last"><a href="{% url m.url_name %}">{{m.title}}</a></li>
+	{% endif %}
+{% endfor %}
 			</ul>
 			<div class="clear"></div>
 		</div>
@@ -36,11 +42,13 @@
 {% endif %}
 
 {% for c in cats %}
+{% if c.women__count > 0 %}
 	{% if c.pk == cat.selected %}
 		<li class="selected">{{c.name}}</li>
 	{% else %}
 		<li><a href="{{ c.get_absolute_url }}">{{c.name}}</a></li>
 	{% endif %}
+{% endif %}
 {% endfor %}
 
 		<li class="share">
@@ -59,6 +67,25 @@
 	<div class="content-text">
 {% block content %}
 {% endblock %}
+
+{% if page_obj.has_other_pages %}
+<nav class="list-pages">
+    <ul>
+        {% for p in paginator.page_range %}
+		{% if page_obj.number == p %}
+		<li class="page-num page-num-selected">{{ p }}</li>
+		{% else %}
+
+        <li class="page-num">
+            <a href="?page={{ p }}">{{ p }}</a>
+        </li>
+		{% endif %}
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
+
+
 	</div>
 <!-- Конец блока контента -->
 

@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.urls import reverse_lazy
@@ -9,6 +10,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import *
 from .models import *
 from .utils import *
+
+
+
+menu = [{'title': "About site", 'url_name': 'about'},
+            {'title': "Add article", 'url_name': 'add_page'},
+            {'title': "Feedback", 'url_name': 'contact'},
+            {'title': "Log in", 'url_name': 'login'}
+            ]
+
+
 
 class WomenHome(DataMixin, ListView):
     model = Women
@@ -34,7 +45,13 @@ def index(request):
     return render(request, 'women/index.html', context=context)
 '''
 def about(request):
-    return render(request, 'women/about.html', {'title': 'About site'})
+    contact_list = Women.objects.all()
+    paginator = Paginator(contact_list, 3)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'women/about.html', {'page_obj': page_obj, 'menu': menu, 'title': 'About site'})
 
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm

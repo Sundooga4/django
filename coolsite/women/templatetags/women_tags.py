@@ -9,6 +9,8 @@ def get_categories(filter=None):
         return Category.objects.all()
     else:
         return Category.objects.filter(pk=filter)
+
+'''
 @register.inclusion_tag('women/list_categories.html')
 def show_categories(sort=None, cat_selected=0):
     if not sort:
@@ -26,5 +28,7 @@ def show_menu():
             {'title': "Add article", 'url_name': 'add_page'},
             {'title': "Feedback", 'url_name': 'contact'},
             {'title': "Log in", 'url_name': 'login'}
-            ]
+            ]   
     return {"menu": menu}
+
+'''
